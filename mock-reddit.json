@@ -1,0 +1,27 @@
+{
+  "data": {
+    "children": [
+      {
+        "data": {
+          "title": "Why cats are better than dogs",
+          "author": "catlover99",
+          "ups": 412
+        }
+      },
+      {
+        "data": {
+          "title": "My cat learned a new trick",
+          "author": "meowdev",
+          "ups": 289
+        }
+      },
+      {
+        "data": {
+          "title": "Best toys for indoor cats?",
+          "author": "frontendcat",
+          "ups": 133
+        }
+      }
+    ]
+  }
+}
