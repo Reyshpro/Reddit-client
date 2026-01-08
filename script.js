@@ -4,9 +4,20 @@ const addSubreddit = document.querySelector('.addSubreddit');
 const input = document.querySelector('.input');
 const label = document.querySelector('.label');
 const lanesContainer = document.querySelector('.lanesContainer');
-addBtn.addEventListener('click', ()=>{
-  popUp.style.display='block'
+const defaultLabelText = label.textContent;
+
+function closePopup() {
+  popUp.style.display = 'none';
+  label.textContent = defaultLabelText;
+  input.value = '';
+}
+
+
+addBtn.addEventListener('click', () => {
+  label.textContent = defaultLabelText;
+  popUp.style.display = 'block';
 });
+
 
 async function fetchSubreddit(subredditName) {
   const response = await fetch('mock-reddit.json');
@@ -24,6 +35,7 @@ async function fetchSubreddit(subredditName) {
 function createLane(subredditName) {
   const lane = document.createElement('div');
   lane.classList.add('lane');
+  lane.dataset.subreddit = subredditName.toLowerCase();
 
   lane.innerHTML = `
     <h2>r/${subredditName}</h2>
@@ -32,13 +44,14 @@ function createLane(subredditName) {
 
   return lane;
 }
+
 function renderPosts(posts, postsContainer) {
  posts.slice(0, 10).forEach(post => {
     const postEl = document.createElement('div');
     postEl.classList.add('post');
 
 postEl.innerHTML = `
-  <div style="border: 1px solid gray; padding: 8px; margin-bottom: 8px; max-width: 250px; border-radius:15px;">
+  <div class="postCard">
     <h4>${post.data.title}</h4>
     <p>by ${post.data.author}</p>
     <span>⬆ ${post.data.ups}</span>
@@ -62,25 +75,46 @@ async function addSubredditLane(subredditName) {
     postsContainer.innerHTML = '';
     renderPosts(posts, postsContainer);
   } catch (error) {
-    postsContainer.innerHTML = '<p>Subreddit not found</p>';
+    postsContainer.innerHTML = '<p style="color:red;">Failed to load posts</p>';
   }
 }
 
 addSubreddit.addEventListener('click', () => {
-  const subredditName = input.value.trim();
+  const subredditName = input.value.trim().toLowerCase();
 
   if (document.querySelector(`[data-subreddit="${subredditName}"]`)) {
   label.innerHTML = 'This subreddit is already added';
   return;
 }
 
-  if (subredditName.length >= 3) {
-  label.innerHTML = '';
+if (subredditName.length >= 3) {
   addSubredditLane(subredditName);
-  popUp.style.display = 'none';
-  input.value = '';
+  closePopup();
 }
+
   else {
     label.innerHTML = 'Please enter at least 3 characters';
   }
+});
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    addSubreddit.click();
+  }
+});
+document.addEventListener('click', (e) => {
+  if (
+    popUp.style.display === 'block' &&
+    !popUp.contains(e.target) &&
+    !addBtn.contains(e.target)
+  ) {
+    closePopup();
+  }
+});
+
+popUp.addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+input.addEventListener('input', () => {
+  label.textContent = defaultLabelText;
 });
